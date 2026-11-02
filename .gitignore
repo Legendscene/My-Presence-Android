@@ -17,5 +17,6 @@ google-services.json
 
 # Secret keys
 secrets.properties
+client_secret_*.json
 
 hs_err_pid*.log
