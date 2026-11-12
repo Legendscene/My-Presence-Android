@@ -23,6 +23,9 @@ class SettingsViewModel @Inject constructor(
     val autoStartEnabled: StateFlow<Boolean> = preferencesRepository.autoStartEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val keepOnline24_7: StateFlow<Boolean> = preferencesRepository.keepOnline24_7
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     val isDarkMode: StateFlow<Boolean> = preferencesRepository.isDarkMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
@@ -48,6 +51,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setAutoStartEnabled(enabled: Boolean) {
         viewModelScope.launch { preferencesRepository.setAutoStartEnabled(enabled) }
+    }
+
+    fun setKeepOnline24_7(enabled: Boolean) {
+        viewModelScope.launch { preferencesRepository.setKeepOnline24_7(enabled) }
     }
 
     fun setIsDarkMode(enabled: Boolean) {

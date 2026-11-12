@@ -119,7 +119,10 @@ fun CustomPresetsScreen(
                 items(presets) { preset ->
                     PresetCard(
                         preset = preset,
-                        onEdit = { onNavigateToEditor(preset) },
+                        onEdit = {
+                            viewModel.applyPreset(preset)
+                            onNavigateToEditor(preset)
+                        },
                         onDuplicate = { viewModel.duplicatePreset(preset) },
                         onDelete = { viewModel.deletePreset(preset.id) },
                         onToggleFavorite = { viewModel.toggleFavorite(preset.id) },

@@ -55,6 +55,7 @@ class PresenceService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var syncJob: Job? = null
     private var resendJob: Job? = null
+    private var customPresenceJob: Job? = null
     private var assetWarmupJob: Job? = null
     private var assetRetryJob: Job? = null
     private var lastPresenceKey: String? = null
@@ -128,10 +129,12 @@ class PresenceService : Service() {
     private fun stopPresence() {
         syncJob?.cancel()
         resendJob?.cancel()
+        customPresenceJob?.cancel()
         assetWarmupJob?.cancel()
         assetRetryJob?.cancel()
         syncJob = null
         resendJob = null
+        customPresenceJob = null
         assetWarmupJob = null
         assetRetryJob = null
         lastPresenceKey = null
@@ -146,6 +149,12 @@ class PresenceService : Service() {
         syncJob = serviceScope.launch {
             appRepository.foregroundApp.collect { app ->
                 sendCurrentPresence(app, "foreground-change")
+            }
+        }
+        customPresenceJob?.cancel()
+        customPresenceJob = serviceScope.launch {
+            preferencesRepository.customPresence.collect {
+                sendCurrentPresence(appRepository.foregroundApp.value, "custom-presence-change", force = true)
             }
         }
         resendJob?.cancel()
@@ -207,14 +216,35 @@ class PresenceService : Service() {
         val enabled = preferencesRepository.presenceEnabled.first()
         if (!enabled || gatewayRepository.state.value !is GatewayConnectionState.Connected) return
 
-        val appForPresence = foreground
+        val enabledApps = preferencesRepository.enabledApps.first()
+        val keepOnline = preferencesRepository.keepOnline24_7.first()
+
+        val appForPresence = if (foreground != null && (enabledApps.isEmpty() || foreground.packageName in enabledApps)) {
+            foreground
+        } else {
+            null
+        }
+
         if (appForPresence == null) {
-            if (lastPresenceKey != null || force) {
-                crashReporter.log("PresenceService clear source=$source")
-                gatewayRepository.clearPresence()
-                lastPresenceKey = null
-                lastPresenceSentMs = System.currentTimeMillis()
-                assetRetryJob?.cancel()
+            if (keepOnline) {
+                val key = "custom:fallback"
+                val now = System.currentTimeMillis()
+                if (!force && key == lastPresenceKey && now - lastPresenceSentMs < 2_500L) return
+                crashReporter.log("PresenceService send fallback (keepOnline) source=$source key=$key")
+                val sent = updatePresence(null)
+                if (sent) {
+                    lastPresenceKey = key
+                    lastPresenceSentMs = now
+                    assetRetryJob?.cancel()
+                }
+            } else {
+                if (lastPresenceKey != null || force) {
+                    crashReporter.log("PresenceService clear source=$source")
+                    gatewayRepository.clearPresence()
+                    lastPresenceKey = null
+                    lastPresenceSentMs = System.currentTimeMillis()
+                    assetRetryJob?.cancel()
+                }
             }
             return
         }
@@ -286,6 +316,7 @@ class PresenceService : Service() {
     override fun onDestroy() {
         syncJob?.cancel()
         resendJob?.cancel()
+        customPresenceJob?.cancel()
         assetWarmupJob?.cancel()
         assetRetryJob?.cancel()
         gatewayRepository.disconnect()

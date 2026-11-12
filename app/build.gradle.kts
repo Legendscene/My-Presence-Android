@@ -5,9 +5,14 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    id("com.google.gms.google-services")
 }
-apply(plugin = "com.google.firebase.crashlytics")
+
+// Firebase is optional for local builds. Drop app/google-services.json in place
+// (Firebase console -> Project settings -> Your apps) to enable Analytics + Crashlytics.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
 
 kotlin {
     jvmToolchain(17)

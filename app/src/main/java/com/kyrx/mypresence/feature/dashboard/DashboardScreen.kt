@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -564,6 +565,42 @@ private fun ActivityPreviewCard(
     activityJson: String?,
     onEditPresence: () -> Unit
 ) {
+    var showRawJson by remember { mutableStateOf(false) }
+
+    val parsedActivity = remember(activityJson) {
+        if (activityJson.isNullOrBlank()) null
+        else {
+            try {
+                val obj = org.json.JSONObject(activityJson)
+                val name = obj.optString("name", "My Presence")
+                val details = obj.optString("details", "")
+                val state = obj.optString("state", "")
+                val type = obj.optInt("type", 0)
+                val assets = obj.optJSONObject("assets")
+                val largeImage = assets?.optString("large_image", "") ?: ""
+                val smallImage = assets?.optString("small_image", "") ?: ""
+                val buttons = obj.optJSONArray("buttons")
+                val buttonList = mutableListOf<String>()
+                if (buttons != null) {
+                    for (i in 0 until buttons.length()) {
+                        buttonList.add(buttons.optString(i))
+                    }
+                }
+                ActivityCardData(
+                    name = name,
+                    details = details,
+                    state = state,
+                    type = type,
+                    largeImage = largeImage,
+                    smallImage = smallImage,
+                    buttons = buttonList
+                )
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+
     GlassCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(Dimens.lg)
@@ -579,36 +616,187 @@ private fun ActivityPreviewCard(
                     style = MaterialTheme.typography.titleSmall,
                     color = TextPrimary
                 )
-                TextButton(onClick = onEditPresence) {
-                    Icon(
-                        Icons.Filled.Edit,
-                        contentDescription = null,
-                        modifier = Modifier.size(Dimens.iconSmall)
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text("Edit Presence", style = MaterialTheme.typography.labelSmall)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (activityJson != null) {
+                        TextButton(onClick = { showRawJson = !showRawJson }) {
+                            Text(
+                                if (showRawJson) "Hide JSON" else "Raw JSON",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextTertiary
+                            )
+                        }
+                    }
+                    TextButton(onClick = onEditPresence) {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = null,
+                            modifier = Modifier.size(Dimens.iconSmall)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text("Edit", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 40.dp, max = 120.dp)
-                    .clip(RoundedCornerShape(Dimens.sm))
-                    .background(SurfaceElevated)
-                    .padding(Dimens.sm)
-            ) {
+            if (parsedActivity != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(54.dp)
+                            .clip(RoundedCornerShape(Dimens.sm))
+                            .background(SurfaceElevated)
+                    ) {
+                        val img = parsedActivity.largeImage
+                        if (img.isNotBlank() && (img.startsWith("http://", ignoreCase = true) || img.startsWith("https://", ignoreCase = true))) {
+                            AsyncImage(
+                                model = img,
+                                contentDescription = "Activity art",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize().background(Accent.copy(alpha = 0.15f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.VideogameAsset,
+                                    contentDescription = null,
+                                    tint = Accent,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
+                        }
+
+                        val sImg = parsedActivity.smallImage
+                        if (sImg.isNotBlank() && (sImg.startsWith("http://", ignoreCase = true) || sImg.startsWith("https://", ignoreCase = true))) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .offset(x = 2.dp, y = 2.dp)
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                                    .background(Background)
+                                    .padding(2.dp)
+                            ) {
+                                AsyncImage(
+                                    model = sImg,
+                                    contentDescription = "Small art",
+                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.width(Dimens.md))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        val typeLabel = when (parsedActivity.type) {
+                            0 -> "Playing"
+                            1 -> "Streaming"
+                            2 -> "Listening to"
+                            3 -> "Watching"
+                            5 -> "Competing in"
+                            else -> "Playing"
+                        }
+                        Text(
+                            text = typeLabel.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Accent,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = parsedActivity.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = TextPrimary,
+                            maxLines = 1
+                        )
+                        if (parsedActivity.details.isNotBlank()) {
+                            Text(
+                                text = parsedActivity.details,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary,
+                                maxLines = 1
+                            )
+                        }
+                        if (parsedActivity.state.isNotBlank()) {
+                            Text(
+                                text = parsedActivity.state,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextTertiary,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+
+                if (parsedActivity.buttons.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.sm)
+                    ) {
+                        parsedActivity.buttons.forEach { btnLabel ->
+                            Surface(
+                                modifier = Modifier.weight(1f).height(28.dp),
+                                shape = RoundedCornerShape(6.dp),
+                                color = SurfaceElevated
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = btnLabel,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
                 Text(
-                    text = activityJson ?: "No current activity data",
-                    style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color = if (activityJson != null) TextPrimary else TextDisabled,
-                    maxLines = 6,
-                    overflow = TextOverflow.Ellipsis
+                    text = "No live presence active. Toggle above to start broadcasting.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextDisabled
                 )
+            }
+
+            if (showRawJson && activityJson != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 40.dp, max = 140.dp)
+                        .clip(RoundedCornerShape(Dimens.sm))
+                        .background(SurfaceElevated)
+                        .padding(Dimens.sm)
+                ) {
+                    Text(
+                        text = activityJson,
+                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        color = TextPrimary,
+                        maxLines = 8,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
 }
+
+private data class ActivityCardData(
+    val name: String,
+    val details: String,
+    val state: String,
+    val type: Int,
+    val largeImage: String,
+    val smallImage: String,
+    val buttons: List<String>
+)
 
 @Composable
 private fun QuickActionsGrid(

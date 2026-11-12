@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,6 +58,7 @@ fun SettingsScreen(
 ) {
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
     val autoStartEnabled by viewModel.autoStartEnabled.collectAsState()
+    val keepOnline24_7 by viewModel.keepOnline24_7.collectAsState()
     val isDarkMode by viewModel.isDarkMode.collectAsState()
     val analyticsEnabled by viewModel.analyticsEnabled.collectAsState()
 
@@ -109,6 +111,14 @@ fun SettingsScreen(
                 subtitle = "Start presence on app launch",
                 checked = autoStartEnabled,
                 onCheckedChange = { viewModel.setAutoStartEnabled(it) }
+            )
+
+            SettingsToggleItem(
+                icon = Icons.Filled.Sync,
+                label = "Keep online 24/7",
+                subtitle = "Maintain presence even when no supported app is open",
+                checked = keepOnline24_7,
+                onCheckedChange = { viewModel.setKeepOnline24_7(it) }
             )
 
             SettingsToggleItem(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +55,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -104,6 +108,42 @@ fun PresenceEditorScreen(
     val status by viewModel.status.collectAsState()
     val livePreview by viewModel.livePreview.collectAsState()
 
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var presetNameInput by remember { mutableStateOf("") }
+
+    if (showSaveDialog) {
+        AlertDialog(
+            onDismissRequest = { showSaveDialog = false },
+            title = { Text("Save as Preset", color = TextPrimary) },
+            text = {
+                PremiumTextField(
+                    value = presetNameInput,
+                    onValueChange = { presetNameInput = it },
+                    label = "Preset Name",
+                    placeholder = name.ifBlank { "My Preset" }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val finalName = presetNameInput.ifBlank { name.ifBlank { "Custom Preset" } }
+                        viewModel.saveAsNewPreset(finalName)
+                        showSaveDialog = false
+                        presetNameInput = ""
+                    }
+                ) {
+                    Text("Save", color = Accent, fontWeight = FontWeight.W600)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSaveDialog = false }) {
+                    Text("Cancel", color = TextTertiary)
+                }
+            },
+            containerColor = Surface
+        )
+    }
+
     Scaffold(
         containerColor = Background,
         topBar = {
@@ -124,11 +164,14 @@ fun PresenceEditorScreen(
                         )
                     }
                 },
-actions = {
-                TextButton(onClick = onNavigateBack) {
-                    Text("Close", color = Accent, fontWeight = FontWeight.W600)
-                }
-            },
+                actions = {
+                    TextButton(onClick = { showSaveDialog = true }) {
+                        Text("Save Preset", color = Accent, fontWeight = FontWeight.W600)
+                    }
+                    TextButton(onClick = onNavigateBack) {
+                        Text("Done", color = TextSecondary, fontWeight = FontWeight.W600)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
             )
         },
@@ -138,7 +181,7 @@ actions = {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = Dimens.lg, vertical = Dimens.sm),
-                    contentPadding = PaddingValues(Dimens.lg)
+                    contentPadding = PaddingValues(Dimens.md)
                 ) {
                     PresencePreview(
                         name = name,
@@ -146,9 +189,12 @@ actions = {
                         state = state,
                         activityType = activityType,
                         status = status,
+                        largeImage = largeImage,
+                        smallImage = smallImage,
+                        button1Label = button1Label,
+                        button2Label = button2Label,
                         startTimestamp = startTimestamp,
-                        endTimestamp = endTimestamp,
-                        jsonPreview = livePreview
+                        endTimestamp = endTimestamp
                     )
                 }
             }
@@ -793,88 +839,154 @@ private fun PresencePreview(
     state: String,
     activityType: Int,
     status: String,
+    largeImage: String,
+    smallImage: String,
+    button1Label: String,
+    button2Label: String,
     startTimestamp: Long?,
     endTimestamp: Long?,
-    jsonPreview: String,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(40.dp)
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
         ) {
             Box(
                 modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(statusColor(status))
-            )
-            Spacer(Modifier.height(Dimens.sm))
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
+                    .size(54.dp)
                     .clip(RoundedCornerShape(Dimens.sm))
-                    .background(Accent.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
+                    .background(Surface)
             ) {
-                Icon(
-                    imageVector = activityTypeIcon(activityType),
-                    contentDescription = null,
-                    tint = Accent,
-                    modifier = Modifier.size(16.dp)
+                if (largeImage.isNotBlank() && (largeImage.startsWith("http://", ignoreCase = true) || largeImage.startsWith("https://", ignoreCase = true))) {
+                    AsyncImage(
+                        model = largeImage,
+                        contentDescription = "Large Artwork",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(Accent.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = activityTypeIcon(activityType),
+                            contentDescription = null,
+                            tint = Accent,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                }
+
+                if (smallImage.isNotBlank() && (smallImage.startsWith("http://", ignoreCase = true) || smallImage.startsWith("https://", ignoreCase = true))) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 2.dp, y = 2.dp)
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(Background)
+                            .padding(2.dp)
+                    ) {
+                        AsyncImage(
+                            model = smallImage,
+                            contentDescription = "Small Artwork",
+                            modifier = Modifier.fillMaxSize().clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.width(Dimens.md))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(statusColor(status))
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = activityTypeLabel(activityType).uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = statusColor(status),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Text(
+                    text = name.ifBlank { "My Presence" },
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    maxLines = 1
                 )
+                if (details.isNotBlank()) {
+                    Text(
+                        text = details,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary,
+                        maxLines = 1
+                    )
+                }
+                if (state.isNotBlank()) {
+                    Text(
+                        text = state,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextTertiary,
+                        maxLines = 1
+                    )
+                }
+                if (startTimestamp != null || endTimestamp != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = if (startTimestamp != null) formatRelativeTime(startTimestamp) else formatRelativeTime(endTimestamp ?: 0L),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextTertiary
+                    )
+                }
             }
         }
-        Spacer(Modifier.width(Dimens.md))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = activityTypeLabel(activityType),
-                style = MaterialTheme.typography.labelSmall,
-                color = statusColor(status)
-            )
-            Text(
-                text = name.ifBlank { "My Presence" },
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.W600,
-                color = TextPrimary
-            )
-            if (details.isNotBlank()) {
-                Text(
-                    text = details,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-            }
-            if (state.isNotBlank()) {
-                Text(
-                    text = state,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiary
-                )
-            }
-            if (startTimestamp != null || endTimestamp != null) {
-                Spacer(Modifier.height(2.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (startTimestamp != null) {
-                        Text(
-                            text = formatRelativeTime(startTimestamp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = TextTertiary
-                        )
+
+        if (button1Label.isNotBlank() || button2Label.isNotBlank()) {
+            Spacer(Modifier.height(Dimens.sm))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.sm)
+            ) {
+                if (button1Label.isNotBlank()) {
+                    Surface(
+                        modifier = Modifier.weight(1f).height(30.dp),
+                        shape = RoundedCornerShape(6.dp),
+                        color = SurfaceBorder
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = button1Label,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextPrimary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
-                    if (startTimestamp != null && endTimestamp != null) {
-                        Text(
-                            text = " \u00b7 ",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = TextTertiary
-                        )
-                    }
-                    if (endTimestamp != null) {
-                        Text(
-                            text = formatRelativeTime(endTimestamp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = TextTertiary
-                        )
+                }
+                if (button2Label.isNotBlank()) {
+                    Surface(
+                        modifier = Modifier.weight(1f).height(30.dp),
+                        shape = RoundedCornerShape(6.dp),
+                        color = SurfaceBorder
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = button2Label,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = TextPrimary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             }

@@ -30,7 +30,10 @@ class AnalyticsManager @Inject constructor(
     }
 
     private fun applyConsent(enabled: Boolean) {
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
-        Firebase.analytics.setAnalyticsCollectionEnabled(enabled)
+        // Fail-soft: builds without google-services.json have no default FirebaseApp.
+        runCatching {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(enabled)
+            Firebase.analytics.setAnalyticsCollectionEnabled(enabled)
+        }
     }
 }

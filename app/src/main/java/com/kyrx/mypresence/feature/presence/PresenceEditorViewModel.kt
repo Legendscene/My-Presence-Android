@@ -152,4 +152,30 @@ class PresenceEditorViewModel @Inject constructor(
 
     // Auto-save on any field change
     fun onFieldChanged() = triggerAutoSave()
+
+    fun saveAsNewPreset(presetName: String) {
+        val preset = com.kyrx.mypresence.domain.model.CustomRpcPreset(
+            id = java.util.UUID.randomUUID().toString(),
+            name = presetName.ifBlank { name.value.ifBlank { "Custom Preset" } },
+            details = details.value,
+            state = state.value,
+            largeImage = largeImage.value,
+            largeText = largeText.value,
+            smallImage = smallImage.value,
+            smallText = smallText.value,
+            startTimestamp = startTimestamp.value,
+            endTimestamp = endTimestamp.value,
+            activityType = activityType.value,
+            status = status.value,
+            button1Label = button1Label.value,
+            button1Url = button1Url.value,
+            button2Label = button2Label.value,
+            button2Url = button2Url.value,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
+        )
+        viewModelScope.launch {
+            preferencesRepository.saveCustomRpcPreset(preset)
+        }
+    }
 }

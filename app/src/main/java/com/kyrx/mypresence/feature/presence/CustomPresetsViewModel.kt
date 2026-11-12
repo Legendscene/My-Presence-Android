@@ -26,7 +26,38 @@ class CustomPresetsViewModel @Inject constructor(
 
     private fun loadPresets() {
         viewModelScope.launch {
-            _presets.value = preferencesRepository.customRpcPresets.first()
+            val list = preferencesRepository.customRpcPresets.first()
+            if (list.isEmpty()) {
+                val defaults = listOf(
+                    CustomRpcPreset(
+                        id = "preset_gaming",
+                        name = "Cyberpunk 2077",
+                        details = "Night City",
+                        state = "Exploring with Johnny",
+                        activityType = 0,
+                        isFavorite = true
+                    ),
+                    CustomRpcPreset(
+                        id = "preset_coding",
+                        name = "Visual Studio Code",
+                        details = "Editing Kotlin Project",
+                        state = "Debugging background sync",
+                        activityType = 0,
+                        isFavorite = true
+                    ),
+                    CustomRpcPreset(
+                        id = "preset_music",
+                        name = "Spotify Music",
+                        details = "Lofi Beats - Chillhop",
+                        state = "Vibing & Relaxing",
+                        activityType = 2
+                    )
+                )
+                defaults.forEach { preferencesRepository.saveCustomRpcPreset(it) }
+                _presets.value = defaults
+            } else {
+                _presets.value = list
+            }
         }
     }
 
