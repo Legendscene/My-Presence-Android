@@ -1,12 +1,12 @@
 <div align="center">
 
-  <img src="app/src/main/res/drawable/ic_app_logo.png" width="96" height="96" alt="My Presence Android Logo">
+  <img src="docs/images/logo.svg" width="128" height="128" alt="My Presence Android Logo">
 
   # My Presence (Android)
 
   <p>
     <strong>Turn your Android activity into a sleek, living Discord presence.</strong><br>
-    Detect apps in real time, customize per-app statuses, and keep your Discord presence alive 24/7.
+    <em>Jo Discord detect nahi karta, wo hum detect karwate hain!</em>
   </p>
 
   <p>
@@ -20,6 +20,7 @@
   </p>
 
   <p>
+    <a href="#-the-core-difference">Why My Presence?</a> •
     <a href="#-quick-preview">Preview</a> •
     <a href="#-features">Features</a> •
     <a href="#-how-to-use-step-by-step">How to Use</a> •
@@ -33,9 +34,21 @@
 
 ---
 
+> [!IMPORTANT]
+> ### 💡 Why My Presence? — Discord Doesn't Detect Mobile Apps, We Do!
+> **Spotify is already natively detected by Discord** through your linked Spotify account. But what about everything else?
+> - **YouTube & YouTube Music** videos and streams? ❌ *Discord doesn't detect it.*
+> - **Mobile Games** (Minecraft PE, BGMI, COD Mobile, Genshin Impact, Roblox)? ❌ *Discord doesn't detect it.*
+> - **Streaming Apps** (Netflix, Prime Video, Anime)? ❌ *Discord doesn't detect it.*
+> - **Dev & Tools** (Termux, VS Code Web/Acode, Chrome, Notion)? ❌ *Discord doesn't detect it.*
+> 
+> **That's why My Presence exists.** It automatically detects any application running on your Android device and turns it into a high-fidelity Discord Rich Presence with custom titles, details, state, live elapsed timers, artwork, and clickable buttons!
+
+---
+
 ## 📸 Quick Preview
 
-### Android Mobile Interface & Dashboard
+### Actual Android Mobile Interface (Jetpack Compose M3)
 <div align="center">
   <img src="docs/images/android-preview.svg" width="95%" alt="My Presence Android App Preview">
 </div>
@@ -49,10 +62,10 @@
 
 ## ✨ Features
 
-- ⚡ **Persistent 24/7 Presence Engine**: Keeps your Discord presence active continuously through an Android Foreground Service with heartbeat ping maintenance (Opcode 1 / 3).
-- 🔍 **Real-Time App Detection**: Automatically detects foreground applications (e.g., YouTube, Spotify, Minecraft PE, Genshin Impact, Chrome) using Android's `UsageStatsManager`.
-- 🎨 **Per-App Customization & Native Icons**: Customize the title, details, state, and activity type for any installed app, complete with native dynamic application icons via `PackageManager`.
-- 👁️ **Authentic Discord Visual Card Preview**: Experience a live on-device Discord card preview with artwork thumbnails, status dots, bold titles, elapsed timers, and interactive action buttons.
+- ⚡ **Automated App Detection for ALL Apps**: Detects foreground applications (YouTube, Netflix, Chrome, Minecraft PE, Genshin Impact, Termux, emulators, etc.) in real-time using `UsageStatsManager`.
+- 🎨 **Per-App Customization & Native App Icons**: Tap any installed app card to customize Title, Details, State, and Activity Type (*Playing*, *Streaming*, *Listening*, *Watching*), complete with native dynamic application icons rendered directly from `PackageManager`.
+- ⏱️ **Persistent 24/7 Presence Service**: Never drops your Discord presence. Runs continuously via an Android Foreground Service with heartbeat ping maintenance (Opcode 1 / 3) and automatically broadcasts a custom fallback presence when apps close.
+- 👁️ **Authentic Discord Visual Card Preview**: Experience a live on-device Discord card preview in both the Dashboard and Presence Editor with Coil artwork, status dots, bold titles, elapsed timers, and interactive action buttons.
 - 💾 **Custom Presets Manager**: Create, edit, and apply presence presets on the fly, with starter presets for *Gaming*, *Coding*, and *Music*.
 - 🛠️ **Live Gateway Diagnostics & 1-Click Share**: Full connection diagnostics showing WebSocket ping, ACKs, session sequence, and event logs, with one-tap clipboard copy and Android system share sheet.
 - 🔋 **Battery-Friendly Background Architecture**: Operates quietly in the background without draining battery, respecting Android Doze mode while ensuring continuous uptime.
@@ -82,9 +95,9 @@ To automatically detect running apps and keep presence alive in the background:
 1. Open the **Apps** screen from the bottom navigation.
 2. You'll see a complete list of your installed apps with their native system icons.
 3. **Tap any app card** to open the **App Presence Config Dialog**:
-   - **Custom Title**: e.g. *"Minecraft PE"*.
-   - **Details**: e.g. *"Exploring Nether Caves"*.
-   - **State**: e.g. *"Hardcore Survival"*.
+   - **Custom Title**: e.g. *"Minecraft PE"* or *"YouTube 4K"*.
+   - **Details**: e.g. *"Exploring Nether Caves"* or *"Watching Tech Reviews"*.
+   - **State**: e.g. *"Hardcore Survival"* or *"Building Projects"*.
    - **Activity Type**: Pick *Playing*, *Streaming*, *Listening*, *Watching*, or *Auto*.
 4. Tap **Save** — whenever you open that app, your Discord status updates instantly!
 

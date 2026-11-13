@@ -1,187 +1,206 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 640" width="850" height="640">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 660" width="880" height="660">
   <defs>
     <linearGradient id="phoneBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0d14" />
-      <stop offset="100%" stop-color="#121724" />
+      <stop offset="0%" stop-color="#0b0e17" />
+      <stop offset="100%" stop-color="#111624" />
     </linearGradient>
     <linearGradient id="androidPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3ddc84" />
-      <stop offset="100%" stop-color="#10b981" />
+      <stop offset="0%" stop-color="#7c6cff" />
+      <stop offset="100%" stop-color="#5865f2" />
     </linearGradient>
-    <linearGradient id="blurpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5865F2" />
-      <stop offset="100%" stop-color="#7289da" />
+    <linearGradient id="ytGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0000" />
+      <stop offset="100%" stop-color="#cc0000" />
+    </linearGradient>
+    <linearGradient id="mineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
     </linearGradient>
     <filter id="phoneShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.6" />
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.65" />
     </filter>
   </defs>
 
   <style>
-    .f { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .f { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
   </style>
 
-  <!-- Left: Android Phone Mockup (x=30, y=20, w=320, h=600) -->
+  <!-- Left: Android Phone Mockup (Actual App UI) -->
   <g transform="translate(30, 20)" filter="url(#phoneShadow)">
     <!-- Outer phone frame -->
-    <rect x="0" y="0" width="310" height="595" rx="36" fill="#1e2433" stroke="#333d54" stroke-width="3" />
+    <rect x="0" y="0" width="320" height="620" rx="40" fill="#1b2130" stroke="#2d374d" stroke-width="3.5" />
     <!-- Inner screen -->
-    <rect x="8" y="8" width="294" height="579" rx="28" fill="url(#phoneBg)" />
+    <rect x="8" y="8" width="304" height="604" rx="32" fill="url(#phoneBg)" />
 
-    <!-- Notch / Front camera punchhole -->
-    <circle cx="155" cy="22" r="6" fill="#000000" />
+    <!-- Notch / Camera punchhole -->
+    <circle cx="160" cy="24" r="6" fill="#000000" />
 
-    <!-- Status bar -->
-    <text x="24" y="24" fill="#94a3b8" font-size="10" font-weight="600" class="f">09:41</text>
-    <text x="250" y="24" fill="#94a3b8" font-size="10" class="f">5G ■■</text>
+    <!-- Status Bar -->
+    <text x="26" y="26" fill="#94a3b8" font-size="11" font-weight="600" class="f">12:30</text>
+    <text x="248" y="26" fill="#94a3b8" font-size="11" class="f">5G 98% 🔋</text>
 
-    <!-- Top App Bar -->
-    <g transform="translate(18, 38)">
+    <!-- Top App Bar (Actual Compose TopAppBar) -->
+    <g transform="translate(20, 42)">
       <circle cx="16" cy="16" r="14" fill="url(#androidPrimary)" />
-      <text x="38" y="22" fill="#f8fafc" font-size="16" font-weight="700" class="f">My Presence</text>
+      <text x="12" y="21" fill="#ffffff" font-size="14" font-weight="900" class="f">P</text>
+      <text x="40" y="22" fill="#f8fafc" font-size="16" font-weight="700" class="f">My Presence</text>
       <!-- Diagnostics bug icon -->
-      <circle cx="236" cy="16" r="12" fill="#1b2130" />
-      <text x="232" y="20" fill="#94a3b8" font-size="11" class="f">🐛</text>
-      <!-- Settings gear -->
-      <circle cx="266" cy="16" r="12" fill="#1b2130" />
-      <text x="262" y="20" fill="#94a3b8" font-size="11" class="f">⚙</text>
+      <circle cx="240" cy="16" r="13" fill="#171d2b" />
+      <text x="233" y="20" fill="#94a3b8" font-size="12" class="f">🐛</text>
+      <!-- Settings gear icon -->
+      <circle cx="272" cy="16" r="13" fill="#171d2b" />
+      <text x="265" y="21" fill="#94a3b8" font-size="12" class="f">⚙</text>
     </g>
 
-    <!-- Presence Status Banner -->
-    <g transform="translate(18, 80)">
-      <rect x="0" y="0" width="274" height="64" rx="14" fill="#131d2e" stroke="#10b981" stroke-width="1.2" />
-      <circle cx="22" cy="24" r="6" fill="#10b981" />
-      <text x="36" y="28" fill="#10b981" font-size="13" font-weight="700" class="f">Discord Presence Active</text>
-      <text x="16" y="48" fill="#94a3b8" font-size="10.5" class="f">Connected via Discord Gateway v10 • 24/7</text>
+    <!-- Actual App: Current Foreground Banner -->
+    <g transform="translate(18, 86)">
+      <rect x="0" y="0" width="284" height="64" rx="14" fill="#141a29" stroke="#28324a" stroke-width="1.2" />
+      <!-- App Icon (YouTube) -->
+      <rect x="12" y="12" width="40" height="40" rx="10" fill="url(#ytGrad)" />
+      <polygon points="28,24 38,32 28,40" fill="#ffffff" />
+      
+      <!-- Text details -->
+      <text x="62" y="28" fill="#f8fafc" font-size="13" font-weight="700" class="f">YouTube</text>
+      <text x="62" y="44" fill="#10b981" font-size="11" class="f">● Detected in Foreground</text>
+
+      <!-- Customize pill button -->
+      <rect x="206" y="20" width="68" height="24" rx="12" fill="#20293d" />
+      <text x="216" y="36" fill="#7c6cff" font-size="10" font-weight="700" class="f">Custom ⚙</text>
     </g>
 
-    <!-- Activity Preview Card (Android Compose) -->
-    <g transform="translate(18, 154)">
-      <rect x="0" y="0" width="274" height="152" rx="14" fill="#18191c" stroke="#2b2d31" stroke-width="1" />
-      <text x="14" y="20" fill="#b5bac1" font-size="9" font-weight="800" class="f">LIVE ACTIVITY PREVIEW</text>
+    <!-- Actual App: Discord ActivityPreviewCard -->
+    <g transform="translate(18, 160)">
+      <rect x="0" y="0" width="284" height="175" rx="14" fill="#18191c" stroke="#2b2d31" stroke-width="1.2" />
+      <text x="14" y="20" fill="#b5bac1" font-size="9" font-weight="800" class="f">DISCORD RICH PRESENCE PREVIEW</text>
 
-      <g transform="translate(14, 28)">
-        <rect x="0" y="0" width="46" height="46" rx="8" fill="url(#blurpleGrad)" />
-        <circle cx="40" cy="40" r="7" fill="#18191c" />
-        <circle cx="40" cy="40" r="5" fill="#23a55a" />
+      <!-- Activity Content -->
+      <g transform="translate(14, 30)">
+        <!-- Large Artwork -->
+        <rect x="0" y="0" width="56" height="56" rx="8" fill="url(#ytGrad)" />
+        <polygon points="22,20 36,28 22,36" fill="#ffffff" />
+        <!-- Small Online Badge -->
+        <circle cx="50" cy="50" r="8" fill="#18191c" />
+        <circle cx="50" cy="50" r="6" fill="#23a55a" />
 
-        <text x="56" y="14" fill="#ffffff" font-size="12" font-weight="700" class="f">Minecraft PE</text>
-        <text x="56" y="28" fill="#dbdee1" font-size="10" class="f">Exploring Nether Caves</text>
-        <text x="56" y="40" fill="#949ba4" font-size="9" class="f">Survival Hardcore</text>
+        <!-- Details -->
+        <text x="66" y="16" fill="#ffffff" font-size="12" font-weight="700" class="f">YouTube Mobile</text>
+        <text x="66" y="30" fill="#dbdee1" font-size="10" class="f">Watching: Cyberpunk 2077 OST</text>
+        <text x="66" y="44" fill="#949ba4" font-size="9.5" class="f">High Quality 4K Stream</text>
+        <text x="66" y="56" fill="#949ba4" font-size="9" class="f">00:38:12 elapsed</text>
       </g>
 
-      <!-- Live Button in Card -->
-      <rect x="14" y="86" width="246" height="26" rx="4" fill="#2b2d31" />
-      <text x="137" y="103" text-anchor="middle" fill="#f2f3f5" font-size="10" font-weight="600" class="f">Join Server ↗</text>
+      <!-- Interactive Action Buttons -->
+      <rect x="14" y="98" width="256" height="28" rx="5" fill="#2b2d31" />
+      <text x="142" y="116" text-anchor="middle" fill="#f2f3f5" font-size="10.5" font-weight="600" class="f">Watch Video ↗</text>
 
-      <rect x="14" y="116" width="246" height="26" rx="4" fill="#2b2d31" />
-      <text x="137" y="133" text-anchor="middle" fill="#f2f3f5" font-size="10" font-weight="600" class="f">Download Resource Pack</text>
+      <rect x="14" y="132" width="256" height="28" rx="5" fill="#2b2d31" />
+      <text x="142" y="150" text-anchor="middle" fill="#f2f3f5" font-size="10.5" font-weight="600" class="f">Visit Channel ↗</text>
     </g>
 
-    <!-- Quick Controls -->
-    <g transform="translate(18, 318)">
-      <rect x="0" y="0" width="274" height="46" rx="12" fill="#141926" stroke="#222a3d" stroke-width="1" />
-      <text x="14" y="22" fill="#f1f5f9" font-size="11" font-weight="600" class="f">Keep Online 24/7</text>
-      <text x="14" y="36" fill="#94a3b8" font-size="9" class="f">Maintain status when apps close</text>
+    <!-- Keep Online 24/7 Switch Card -->
+    <g transform="translate(18, 345)">
+      <rect x="0" y="0" width="284" height="48" rx="12" fill="#141a29" stroke="#252f47" stroke-width="1" />
+      <text x="14" y="22" fill="#f1f5f9" font-size="11.5" font-weight="600" class="f">Keep Online 24/7</text>
+      <text x="14" y="37" fill="#94a3b8" font-size="9.5" class="f">Broadcast presence even when idle</text>
       <!-- Switch Toggle ON -->
-      <rect x="224" y="14" width="36" height="18" rx="9" fill="#10b981" />
-      <circle cx="249" cy="23" r="7" fill="#ffffff" />
+      <rect x="232" y="15" width="38" height="18" rx="9" fill="#10b981" />
+      <circle cx="259" cy="24" r="7" fill="#ffffff" />
     </g>
 
-    <!-- Installed Apps Quick Section -->
-    <g transform="translate(18, 374)">
-      <text x="2" y="14" fill="#94a3b8" font-size="11" font-weight="700" letter-spacing="0.5" class="f">DETECTED APPS &amp; CUSTOM PRESETS</text>
+    <!-- App Detection List (Apps Discord CANNOT natively detect!) -->
+    <g transform="translate(18, 403)">
+      <text x="2" y="14" fill="#94a3b8" font-size="10.5" font-weight="700" letter-spacing="0.5" class="f">WHAT DISCORD DOESN'T DETECT, WE DO!</text>
 
-      <!-- App 1 -->
+      <!-- Minecraft PE -->
       <g transform="translate(0, 22)">
-        <rect x="0" y="0" width="274" height="42" rx="10" fill="#121724" stroke="#1f2738" stroke-width="1" />
-        <circle cx="20" cy="21" r="11" fill="#ef4444" />
-        <text x="15" y="25" fill="#ffffff" font-size="10" font-weight="700" class="f">▶</text>
-        <text x="38" y="18" fill="#f1f5f9" font-size="11" font-weight="600" class="f">YouTube</text>
-        <text x="38" y="32" fill="#10b981" font-size="9" class="f">Custom Presence active</text>
-        <!-- Toggle button -->
-        <rect x="228" y="12" width="34" height="18" rx="9" fill="#10b981" />
-        <circle cx="251" cy="21" r="7" fill="#ffffff" />
+        <rect x="0" y="0" width="284" height="40" rx="10" fill="#131826" stroke="#1f283d" stroke-width="1" />
+        <rect x="10" y="8" width="24" height="24" rx="6" fill="url(#mineGrad)" />
+        <text x="42" y="20" fill="#f1f5f9" font-size="11" font-weight="600" class="f">Minecraft PE</text>
+        <text x="42" y="32" fill="#10b981" font-size="9" class="f">Custom Presence: Nether Exploration</text>
+        <rect x="238" y="11" width="34" height="18" rx="9" fill="#10b981" />
+        <circle cx="261" cy="20" r="7" fill="#ffffff" />
       </g>
 
-      <!-- App 2 -->
-      <g transform="translate(0, 70)">
-        <rect x="0" y="0" width="274" height="42" rx="10" fill="#121724" stroke="#1f2738" stroke-width="1" />
-        <circle cx="20" cy="21" r="11" fill="#10b981" />
-        <text x="14" y="25" fill="#ffffff" font-size="10" font-weight="700" class="f">♫</text>
-        <text x="38" y="18" fill="#f1f5f9" font-size="11" font-weight="600" class="f">Spotify</text>
-        <text x="38" y="32" fill="#64748b" font-size="9" class="f">Listen Along configured</text>
-        <rect x="228" y="12" width="34" height="18" rx="9" fill="#10b981" />
-        <circle cx="251" cy="21" r="7" fill="#ffffff" />
+      <!-- Genshin Impact -->
+      <g transform="translate(0, 68)">
+        <rect x="0" y="0" width="284" height="40" rx="10" fill="#131826" stroke="#1f283d" stroke-width="1" />
+        <rect x="10" y="8" width="24" height="24" rx="6" fill="#6366f1" />
+        <text x="42" y="20" fill="#f1f5f9" font-size="11" font-weight="600" class="f">Genshin Impact</text>
+        <text x="42" y="32" fill="#94a3b8" font-size="9" class="f">Spiral Abyss Floor 12</text>
+        <rect x="238" y="11" width="34" height="18" rx="9" fill="#10b981" />
+        <circle cx="261" cy="20" r="7" fill="#ffffff" />
       </g>
     </g>
 
-    <!-- Bottom Nav Bar -->
-    <g transform="translate(8, 524)">
-      <rect x="0" y="0" width="294" height="52" rx="20" fill="#151b29" stroke="#222b3e" stroke-width="1" />
-      <text x="34" y="30" fill="#3ddc84" font-size="11" font-weight="700" class="f">🏠 Home</text>
+    <!-- Bottom Nav Bar (Exact Navigation) -->
+    <g transform="translate(8, 545)">
+      <rect x="0" y="0" width="304" height="50" rx="18" fill="#151b29" stroke="#252f47" stroke-width="1" />
+      <text x="32" y="30" fill="#7c6cff" font-size="11" font-weight="700" class="f">🏠 Home</text>
       <text x="110" y="30" fill="#94a3b8" font-size="11" font-weight="500" class="f">🎮 Presets</text>
-      <text x="188" y="30" fill="#94a3b8" font-size="11" font-weight="500" class="f">📱 Apps</text>
-      <text x="248" y="30" fill="#94a3b8" font-size="11" font-weight="500" class="f">⚙</text>
+      <text x="194" y="30" fill="#94a3b8" font-size="11" font-weight="500" class="f">📱 Apps</text>
+      <text x="260" y="30" fill="#94a3b8" font-size="11" font-weight="500" class="f">⚙</text>
     </g>
   </g>
 
-  <!-- Right: Feature Cards & Architecture Highlights -->
-  <g transform="translate(380, 40)">
-    <text x="0" y="24" fill="#3ddc84" font-size="13" font-weight="700" letter-spacing="1" class="f">NEXT-GEN MOBILE RICH PRESENCE</text>
-    <text x="0" y="56" fill="#f8fafc" font-size="24" font-weight="800" class="f">My Presence on Android</text>
-    <text x="0" y="82" fill="#94a3b8" font-size="13.5" class="f">Show what games you play, songs you hear, and apps you use.</text>
+  <!-- Right: Value Proposition & Feature Highlights -->
+  <g transform="translate(390, 45)">
+    <rect x="0" y="0" width="460" height="42" rx="8" fill="#1f1833" stroke="#7c6cff" stroke-width="1" />
+    <text x="16" y="26" fill="#a78bfa" font-size="12" font-weight="700" class="f">💡 SPOTIFY DETECT HOTA HAI, PAR BAAKI SAB HUM DETECT KARTE HAIN!</text>
 
-    <!-- Feature 1: Foreground Service & 24/7 Engine -->
-    <g transform="translate(0, 110)">
-      <rect x="0" y="0" width="430" height="85" rx="12" fill="#131926" stroke="#222c40" stroke-width="1" />
-      <circle cx="36" cy="42" r="18" fill="#10b981" opacity="0.15" />
-      <text x="28" y="48" fill="#3ddc84" font-size="18" class="f">⚡</text>
-      <text x="68" y="32" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Persistent 24/7 Presence Service</text>
-      <text x="68" y="52" fill="#94a3b8" font-size="12" class="f">Stays active through an Android Foreground Service with automatic</text>
-      <text x="68" y="68" fill="#94a3b8" font-size="12" class="f">reconnection &amp; heartbeat acknowledgment (Opcode 1 / 3).</text>
+    <text x="0" y="80" fill="#f8fafc" font-size="25" font-weight="800" class="f">Rich Presence for Every Android App</text>
+    <text x="0" y="106" fill="#94a3b8" font-size="13.5" class="f">Discord only supports Spotify on mobile. My Presence brings full</text>
+    <text x="0" y="126" fill="#94a3b8" font-size="13.5" class="f">Rich Presence to ALL your games, YouTube, emulators &amp; tools.</text>
+
+    <!-- Card 1: Any App Tracking -->
+    <g transform="translate(0, 150)">
+      <rect x="0" y="0" width="460" height="92" rx="14" fill="#131926" stroke="#222c40" stroke-width="1" />
+      <circle cx="36" cy="46" r="18" fill="#ef4444" opacity="0.15" />
+      <text x="27" y="52" fill="#ef4444" font-size="18" class="f">📱</text>
+      <text x="68" y="34" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Automatic Detection for ANY Installed App</text>
+      <text x="68" y="54" fill="#94a3b8" font-size="12" class="f">YouTube, Netflix, Chrome, Minecraft, BGMI, COD Mobile, Termux,</text>
+      <text x="68" y="70" fill="#94a3b8" font-size="12" class="f">or PPSSPP — opening any app automatically updates Discord.</text>
     </g>
 
-    <!-- Feature 2: Per-App Customization & Native App Icons -->
-    <g transform="translate(0, 210)">
-      <rect x="0" y="0" width="430" height="85" rx="12" fill="#131926" stroke="#222c40" stroke-width="1" />
-      <circle cx="36" cy="42" r="18" fill="#5865f2" opacity="0.15" />
-      <text x="28" y="48" fill="#5865f2" font-size="18" class="f">🎨</text>
-      <text x="68" y="32" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Per-App Presence &amp; Native Icons</text>
-      <text x="68" y="52" fill="#94a3b8" font-size="12" class="f">Customize details, activity type, and status strings for each</text>
-      <text x="68" y="68" fill="#94a3b8" font-size="12" class="f">installed app with dynamic PackageManager icon rendering.</text>
+    <!-- Card 2: Per-App Customization Dialog -->
+    <g transform="translate(0, 256)">
+      <rect x="0" y="0" width="460" height="92" rx="14" fill="#131926" stroke="#222c40" stroke-width="1" />
+      <circle cx="36" cy="46" r="18" fill="#10b981" opacity="0.15" />
+      <text x="27" y="52" fill="#10b981" font-size="18" class="f">⚙</text>
+      <text x="68" y="34" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Per-App Presence Config &amp; Native Icons</text>
+      <text x="68" y="54" fill="#94a3b8" font-size="12" class="f">Tap any app in the list to set custom Title, Details, State, and</text>
+      <text x="68" y="70" fill="#94a3b8" font-size="12" class="f">Activity Type (Play, Stream, Listen, Watch) with native icon previews.</text>
     </g>
 
-    <!-- Feature 3: Live Visual Discord Preview Card -->
-    <g transform="translate(0, 310)">
-      <rect x="0" y="0" width="430" height="85" rx="12" fill="#131926" stroke="#222c40" stroke-width="1" />
-      <circle cx="36" cy="42" r="18" fill="#f59e0b" opacity="0.15" />
-      <text x="28" y="48" fill="#f59e0b" font-size="18" class="f">👁</text>
-      <text x="68" y="32" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Real-time Discord Visual Preview</text>
-      <text x="68" y="52" fill="#94a3b8" font-size="12" class="f">See exactly how your profile looks on Discord with Coil image</text>
-      <text x="68" y="68" fill="#94a3b8" font-size="12" class="f">artwork, small badge overlay, timer, and interactive buttons.</text>
+    <!-- Card 3: 24/7 Foreground Service -->
+    <g transform="translate(0, 362)">
+      <rect x="0" y="0" width="460" height="92" rx="14" fill="#131926" stroke="#222c40" stroke-width="1" />
+      <circle cx="36" cy="46" r="18" fill="#7c6cff" opacity="0.15" />
+      <text x="27" y="52" fill="#7c6cff" font-size="18" class="f">⚡</text>
+      <text x="68" y="34" fill="#f1f5f9" font-size="15" font-weight="700" class="f">24/7 Keep Online Background Engine</text>
+      <text x="68" y="54" fill="#94a3b8" font-size="12" class="f">Never drops presence even when the screen is locked or all apps</text>
+      <text x="68" y="70" fill="#94a3b8" font-size="12" class="f">are closed; seamlessly broadcasts your default custom presence.</text>
     </g>
 
-    <!-- Feature 4: Comprehensive Diagnostics & 1-Click Sharing -->
-    <g transform="translate(0, 410)">
-      <rect x="0" y="0" width="430" height="85" rx="12" fill="#131926" stroke="#222c40" stroke-width="1" />
-      <circle cx="36" cy="42" r="18" fill="#ec4899" opacity="0.15" />
-      <text x="28" y="48" fill="#ec4899" font-size="18" class="f">🔍</text>
-      <text x="68" y="32" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Live Gateway Diagnostics &amp; Sharing</text>
-      <text x="68" y="52" fill="#94a3b8" font-size="12" class="f">Inspect WebSocket ping, Opcode dispatches, and event logs.</text>
-      <text x="68" y="68" fill="#94a3b8" font-size="12" class="f">Copy or share system diagnostic reports with a single tap.</text>
+    <!-- Card 4: Diagnostics with Copy & Share -->
+    <g transform="translate(0, 468)">
+      <rect x="0" y="0" width="460" height="92" rx="14" fill="#131926" stroke="#222c40" stroke-width="1" />
+      <circle cx="36" cy="46" r="18" fill="#f59e0b" opacity="0.15" />
+      <text x="27" y="52" fill="#f59e0b" font-size="18" class="f">🔍</text>
+      <text x="68" y="34" fill="#f1f5f9" font-size="15" font-weight="700" class="f">Live Gateway Diagnostics &amp; 1-Tap Share</text>
+      <text x="68" y="54" fill="#94a3b8" font-size="12" class="f">Monitor WebSocket ping, Opcode 3 heartbeats, and raw event logs.</text>
+      <text x="68" y="70" fill="#94a3b8" font-size="12" class="f">Copy or share reports via Android share sheet in 1 tap.</text>
     </g>
 
-    <!-- Quick Spec Badges -->
-    <g transform="translate(0, 520)">
-      <rect x="0" y="0" width="130" height="32" rx="6" fill="#192033" />
-      <text x="18" y="20" fill="#94a3b8" font-size="11" class="f">API 26+ (Android 8.0+)</text>
+    <!-- Tech Badges -->
+    <g transform="translate(0, 580)">
+      <rect x="0" y="0" width="105" height="30" rx="6" fill="#192033" />
+      <text x="14" y="19" fill="#94a3b8" font-size="11" class="f">Android 8.0+</text>
 
-      <rect x="142" y="0" width="130" height="32" rx="6" fill="#192033" />
-      <text x="156" y="20" fill="#94a3b8" font-size="11" class="f">Jetpack Compose M3</text>
+      <rect x="115" y="0" width="165" height="30" rx="6" fill="#192033" />
+      <text x="127" y="19" fill="#94a3b8" font-size="11" class="f">Discord Gateway v10</text>
 
-      <rect x="284" y="0" width="144" height="32" rx="6" fill="#192033" />
-      <text x="298" y="20" fill="#94a3b8" font-size="11" class="f">Discord Gateway v10</text>
+      <rect x="290" y="0" width="170" height="30" rx="6" fill="#192033" />
+      <text x="302" y="19" fill="#94a3b8" font-size="11" class="f">Jetpack Compose M3</text>
     </g>
   </g>
 </svg>

@@ -5,13 +5,13 @@
       <stop offset="100%" stop-color="#18191c" />
     </linearGradient>
     <linearGradient id="bannerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5865F2" />
-      <stop offset="50%" stop-color="#7289da" />
-      <stop offset="100%" stop-color="#99aab5" />
+      <stop offset="0%" stop-color="#7c6cff" />
+      <stop offset="50%" stop-color="#5865F2" />
+      <stop offset="100%" stop-color="#38bdf8" />
     </linearGradient>
-    <linearGradient id="artGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10b981" />
-      <stop offset="100%" stop-color="#059669" />
+    <linearGradient id="ytGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0000" />
+      <stop offset="100%" stop-color="#cc0000" />
     </linearGradient>
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
       <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.45" />
@@ -38,50 +38,46 @@
   <circle cx="89" cy="107" r="7.5" fill="#23a55a" />
 
   <!-- Username and Badges -->
-  <text x="120" y="112" fill="#f2f3f5" font-size="19" font-weight="700" class="font">My Presence (Mobile)</text>
-  <rect x="330" y="97" width="54" height="20" rx="4" fill="#5865F2" />
-  <text x="338" y="111" fill="#ffffff" font-size="11" font-weight="700" class="font">APP</text>
-  <text x="120" y="132" fill="#949ba4" font-size="13" font-weight="500" class="font">mypresence • Active on Android Phone</text>
+  <text x="120" y="112" fill="#f2f3f5" font-size="19" font-weight="700" class="font">Alex</text>
+  <rect x="175" y="97" width="54" height="20" rx="4" fill="#5865F2" />
+  <text x="183" y="111" fill="#ffffff" font-size="11" font-weight="700" class="font">APP</text>
+  <text x="120" y="132" fill="#949ba4" font-size="13" font-weight="500" class="font">@alex • Mobile Rich Presence via My Presence</text>
 
   <!-- Divider -->
   <line x1="30" y1="148" x2="710" y2="148" stroke="#2b2d31" stroke-width="1" />
 
   <!-- Rich Presence Section -->
-  <!-- Activity Header -->
-  <text x="30" y="172" fill="#b5bac1" font-size="12" font-weight="800" letter-spacing="0.5" class="font">PLAYING A GAME</text>
+  <text x="30" y="172" fill="#b5bac1" font-size="12" font-weight="800" letter-spacing="0.5" class="font">WATCHING A VIDEO</text>
 
   <!-- Card Body -->
   <g transform="translate(30, 185)">
-    <!-- Large Artwork with border radius -->
-    <rect x="0" y="0" width="86" height="86" rx="12" fill="url(#artGrad)" />
-    <!-- Android icon inside -->
-    <circle cx="43" cy="40" r="16" fill="#ffffff" />
-    <circle cx="37" cy="36" r="2" fill="#059669" />
-    <circle cx="49" cy="36" r="2" fill="#059669" />
+    <!-- Large Artwork (YouTube) -->
+    <rect x="0" y="0" width="86" height="86" rx="12" fill="url(#ytGrad)" />
+    <polygon points="34,30 56,43 34,56" fill="#ffffff" />
 
-    <!-- Small Overlay Badge -->
+    <!-- Small Overlay Badge (Android Phone) -->
     <circle cx="76" cy="76" r="15" fill="#111214" />
-    <circle cx="76" cy="76" r="12" fill="#23a55a" />
+    <circle cx="76" cy="76" r="12" fill="#10b981" />
     <path d="M 72 76 L 75 79 L 80 73" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
 
     <!-- Activity Details Column -->
-    <text x="104" y="20" fill="#f2f3f5" font-size="16" font-weight="700" class="font">Spotify / Mobile Gaming</text>
-    <text x="104" y="40" fill="#dbdee1" font-size="14" font-weight="500" class="font">Listening to synthwave &amp; coding</text>
-    <text x="104" y="58" fill="#949ba4" font-size="13" font-weight="400" class="font">Keep Online 24/7 Enabled • Gateway v10</text>
+    <text x="104" y="20" fill="#f2f3f5" font-size="16" font-weight="700" class="font">YouTube Mobile (Android)</text>
+    <text x="104" y="40" fill="#dbdee1" font-size="14" font-weight="500" class="font">Watching: Building the ultimate custom presence</text>
+    <text x="104" y="58" fill="#949ba4" font-size="13" font-weight="400" class="font">4K 60FPS • Keep Online 24/7 Enabled</text>
     <g transform="translate(104, 68)">
       <circle cx="6" cy="11" r="5" fill="none" stroke="#949ba4" stroke-width="1.5" />
       <line x1="6" y1="8" x2="6" y2="11" stroke="#949ba4" stroke-width="1.5" stroke-linecap="round" />
       <line x1="6" y1="11" x2="9" y2="11" stroke="#949ba4" stroke-width="1.5" stroke-linecap="round" />
-      <text x="16" y="15" fill="#949ba4" font-size="12" font-weight="500" class="font">00:34:12 elapsed</text>
+      <text x="16" y="15" fill="#949ba4" font-size="12" font-weight="500" class="font">00:38:12 elapsed</text>
     </g>
   </g>
 
   <!-- Interactive Action Buttons -->
   <g transform="translate(30, 295)">
     <rect x="0" y="0" width="325" height="42" rx="6" fill="#2b2d31" stroke="#35373c" stroke-width="1" />
-    <text x="162" y="26" text-anchor="middle" fill="#f2f3f5" font-size="14" font-weight="600" class="font">Listen Along 🎵</text>
+    <text x="162" y="26" text-anchor="middle" fill="#f2f3f5" font-size="14" font-weight="600" class="font">Watch Video ↗</text>
 
     <rect x="345" y="0" width="325" height="42" rx="6" fill="#2b2d31" stroke="#35373c" stroke-width="1" />
-    <text x="507" y="26" text-anchor="middle" fill="#f2f3f5" font-size="14" font-weight="600" class="font">Download App ↗</text>
+    <text x="507" y="26" text-anchor="middle" fill="#f2f3f5" font-size="14" font-weight="600" class="font">View Channel ↗</text>
   </g>
 </svg>
