@@ -1,5 +1,6 @@
 package com.kyrx.mypresence.feature.diagnostics
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,20 +14,29 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -40,6 +50,7 @@ import com.kyrx.mypresence.ui.theme.Success
 import com.kyrx.mypresence.ui.theme.TextPrimary
 import com.kyrx.mypresence.ui.theme.TextSecondary
 import com.kyrx.mypresence.ui.theme.TextTertiary
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,9 +60,43 @@ fun DiagnosticsScreen(
 ) {
     val gatewayState by vm.gatewayState.collectAsStateWithLifecycle()
     val diagnostics by vm.diagnostics.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    val buildDiagnosticsReport: () -> String = {
+        buildString {
+            appendLine("=== My Presence Diagnostics Report ===")
+            appendLine("Gateway State: ${stateLabel(gatewayState)}")
+            appendLine("Gateway Version: v${diagnostics.gatewayVersion}")
+            appendLine("Ping: ${diagnostics.heartbeatPing?.let { "${it}ms" } ?: "N/A"}")
+            appendLine("Heartbeat ACKs: ${diagnostics.heartbeatAckCount}")
+            appendLine("Session ID: ${diagnostics.sessionId ?: "N/A"}")
+            appendLine("Sequence Number: ${diagnostics.lastSequenceNumber ?: "N/A"}")
+            appendLine("Auth Provider: ${diagnostics.currentAuthProvider ?: "N/A"}")
+            appendLine("READY Received: ${diagnostics.readyReceived}")
+            appendLine("Auth Milestone: ${diagnostics.authMilestone ?: "N/A"}")
+            appendLine("Last Close: code=${diagnostics.lastCloseCode ?: "N/A"} reason=${diagnostics.lastCloseReason ?: "N/A"}")
+            appendLine("Presence Updates: ${diagnostics.presenceUpdateCount}")
+            appendLine("Last Dispatch: ${diagnostics.lastGatewayDispatch ?: "N/A"}")
+            appendLine("OP3 Accepted: ${diagnostics.lastOp3Accepted}")
+            appendLine("Reconnect Attempts: ${diagnostics.reconnectAttempts}")
+            appendLine("Foreground Service: ${diagnostics.foregroundServiceActive}")
+            appendLine("Usage Stats Granted: ${diagnostics.hasUsageStatsPermission}")
+            appendLine("Battery Opt. Ignored: ${diagnostics.isIgnoringBatteryOptimizations}")
+            if (diagnostics.eventLog.isNotEmpty()) {
+                appendLine("\n--- Gateway Event Logs (${diagnostics.eventLog.size}) ---")
+                diagnostics.eventLog.takeLast(40).forEachIndexed { idx, log ->
+                    appendLine("[${idx + 1}] $log")
+                }
+            }
+        }
+    }
 
     Scaffold(
         containerColor = Background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -66,6 +111,37 @@ fun DiagnosticsScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
+                            tint = TextPrimary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        val report = buildDiagnosticsReport()
+                        clipboardManager.setText(AnnotatedString(report))
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Diagnostics copied to clipboard")
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = "Copy Diagnostics",
+                            tint = TextPrimary
+                        )
+                    }
+                    IconButton(onClick = {
+                        val report = buildDiagnosticsReport()
+                        val sendIntent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, report)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, "Share Diagnostics")
+                        context.startActivity(shareIntent)
+                    }) {
+                        Icon(
+                            Icons.Default.Share,
+                            contentDescription = "Share Diagnostics",
                             tint = TextPrimary
                         )
                     }

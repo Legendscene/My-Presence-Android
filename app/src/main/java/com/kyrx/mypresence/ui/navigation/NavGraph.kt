@@ -229,7 +229,8 @@ fun NavGraph(
             SettingsScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToAbout = { navController.navigate(Screen.About.route) }
+                onNavigateToAbout = { navController.navigate(Screen.About.route) },
+                onNavigateToDiagnostics = { navController.navigate(Screen.Diagnostics.route) }
             )
         }
 

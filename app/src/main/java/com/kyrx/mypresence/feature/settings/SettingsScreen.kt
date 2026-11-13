@@ -54,7 +54,8 @@ import com.kyrx.mypresence.ui.theme.TextTertiary
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToAbout: () -> Unit = {}
+    onNavigateToAbout: () -> Unit = {},
+    onNavigateToDiagnostics: () -> Unit = {}
 ) {
     val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
     val autoStartEnabled by viewModel.autoStartEnabled.collectAsState()
@@ -144,6 +145,13 @@ fun SettingsScreen(
             Spacer(Modifier.height(Dimens.xl))
 
             SettingsGroupHeader("Other")
+
+            SettingsNavItem(
+                icon = Icons.Filled.BugReport,
+                label = "Diagnostics",
+                subtitle = "Gateway connection status & live logs",
+                onClick = onNavigateToDiagnostics
+            )
 
             SettingsNavItem(
                 icon = Icons.Filled.Info,
