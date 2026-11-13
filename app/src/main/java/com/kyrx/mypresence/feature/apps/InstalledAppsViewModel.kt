@@ -3,6 +3,7 @@ package com.kyrx.mypresence.feature.apps
 import androidx.lifecycle.ViewModel
 import com.kyrx.mypresence.domain.model.AppCategory
 import com.kyrx.mypresence.domain.model.AppInfo
+import com.kyrx.mypresence.domain.model.AppPresenceConfig
 import com.kyrx.mypresence.domain.repository.AppRepository
 import com.kyrx.mypresence.domain.repository.AppSort
 import com.kyrx.mypresence.domain.repository.PreferencesRepository
@@ -32,6 +33,8 @@ class InstalledAppsViewModel @Inject constructor(
     val foregroundApp: StateFlow<AppInfo?> = appRepository.foregroundApp
     val enabledApps: StateFlow<Set<String>> = preferencesRepository.enabledApps
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+    val appPresenceConfigs: StateFlow<List<AppPresenceConfig>> = preferencesRepository.appPresenceConfigs
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
     val currentSort: StateFlow<AppSort> = _currentSort.asStateFlow()
     val showFavoritesOnly: StateFlow<Boolean> = _showFavoritesOnly.asStateFlow()
@@ -40,6 +43,14 @@ class InstalledAppsViewModel @Inject constructor(
         viewModelScope.launch {
             appRepository.refresh()
         }
+    }
+
+    fun saveAppPresenceConfig(config: AppPresenceConfig) {
+        viewModelScope.launch { preferencesRepository.saveAppPresenceConfig(config) }
+    }
+
+    fun removeAppPresenceConfig(packageName: String) {
+        viewModelScope.launch { preferencesRepository.removeAppPresenceConfig(packageName) }
     }
 
     fun setSearchQuery(query: String) {

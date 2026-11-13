@@ -25,6 +25,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
@@ -34,15 +37,18 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -55,6 +61,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,10 +71,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kyrx.mypresence.domain.model.AppCategory
 import com.kyrx.mypresence.domain.model.AppInfo
+import com.kyrx.mypresence.domain.model.AppPresenceConfig
 import com.kyrx.mypresence.domain.repository.AppSort
 import com.kyrx.mypresence.ui.animation.StaggeredReveal
 import com.kyrx.mypresence.ui.components.GlassCard
 import com.kyrx.mypresence.ui.components.PremiumSwitch
+import com.kyrx.mypresence.ui.components.PremiumTextField
 import com.kyrx.mypresence.ui.components.ShimmerCard
 import com.kyrx.mypresence.ui.theme.Accent
 import com.kyrx.mypresence.ui.theme.Background
@@ -91,9 +101,11 @@ fun InstalledAppsScreen(
     val isScanning by vm.isScanning.collectAsStateWithLifecycle()
     val foregroundApp by vm.foregroundApp.collectAsStateWithLifecycle()
     val enabledApps by vm.enabledApps.collectAsStateWithLifecycle()
+    val appPresenceConfigs by vm.appPresenceConfigs.collectAsStateWithLifecycle()
     val showFavoritesOnly by vm.showFavoritesOnly.collectAsStateWithLifecycle()
     var showSortMenu by remember { mutableStateOf(false) }
     var showBulkActions by remember { mutableStateOf(false) }
+    var editingApp by remember { mutableStateOf<AppInfo?>(null) }
 
     Column(
         modifier = Modifier
@@ -365,16 +377,184 @@ fun InstalledAppsScreen(
                         )
                     }
                     items(categoryApps, key = { it.packageName }) { app ->
+                        val hasCustomConfig = appPresenceConfigs.any { it.packageName == app.packageName }
                         AppCard(
                             app = app,
                             isFavorite = app.isFavorite,
                             isEnabled = app.packageName in enabledApps,
+                            hasCustomConfig = hasCustomConfig,
                             onToggleFavorite = { vm.toggleFavorite(app.packageName) },
-                            onToggleEnabled = { vm.toggleEnabled(app.packageName, it) }
+                            onToggleEnabled = { vm.toggleEnabled(app.packageName, it) },
+                            onCardClick = { editingApp = app }
                         )
                     }
                 }
             }
+        }
+
+        if (editingApp != null) {
+            val targetApp = editingApp!!
+            val existingCfg = appPresenceConfigs.find { it.packageName == targetApp.packageName }
+            var configName by remember(targetApp) { mutableStateOf(existingCfg?.name ?: "") }
+            var configDetails by remember(targetApp) { mutableStateOf(existingCfg?.details ?: "") }
+            var configState by remember(targetApp) { mutableStateOf(existingCfg?.state ?: "") }
+            var configType by remember(targetApp) { mutableStateOf(existingCfg?.activityType ?: -1) }
+
+            AlertDialog(
+                onDismissRequest = { editingApp = null },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AppIcon(packageName = targetApp.packageName, appName = targetApp.appName, sizeDp = 34)
+                        Spacer(Modifier.width(10.dp))
+                        Column {
+                            Text(targetApp.appName, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text("Custom Presence Details", color = TextTertiary, fontSize = 11.sp)
+                        }
+                    }
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        PremiumTextField(
+                            value = configName,
+                            onValueChange = { configName = it },
+                            label = "Activity Title",
+                            placeholder = targetApp.appName
+                        )
+                        PremiumTextField(
+                            value = configDetails,
+                            onValueChange = { configDetails = it },
+                            label = "Details",
+                            placeholder = "e.g. In Match, Browsing, Idle"
+                        )
+                        PremiumTextField(
+                            value = configState,
+                            onValueChange = { configState = it },
+                            label = "State",
+                            placeholder = "e.g. Solo, Level 42, In Lobby"
+                        )
+                        Text("Activity Type", color = Accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val types = listOf(
+                                -1 to "Auto",
+                                0 to "Play",
+                                1 to "Stream",
+                                2 to "Listen",
+                                3 to "Watch"
+                            )
+                            types.forEach { (typeVal, label) ->
+                                val isSel = configType == typeVal
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { configType = typeVal },
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSel) Accent.copy(alpha = 0.2f) else Surface,
+                                    border = if (isSel) androidx.compose.foundation.BorderStroke(1.dp, Accent) else null
+                                ) {
+                                    Box(
+                                        modifier = Modifier.padding(vertical = 6.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            label,
+                                            fontSize = 11.sp,
+                                            color = if (isSel) Accent else TextSecondary,
+                                            fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            vm.saveAppPresenceConfig(
+                                AppPresenceConfig(
+                                    packageName = targetApp.packageName,
+                                    name = configName.trim(),
+                                    details = configDetails.trim(),
+                                    state = configState.trim(),
+                                    activityType = configType
+                                )
+                            )
+                            editingApp = null
+                        }
+                    ) {
+                        Text("Save", color = Accent, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    Row {
+                        if (existingCfg != null) {
+                            TextButton(
+                                onClick = {
+                                    vm.removeAppPresenceConfig(targetApp.packageName)
+                                    editingApp = null
+                                }
+                            ) {
+                                Text("Reset", color = Warning)
+                            }
+                        }
+                        TextButton(onClick = { editingApp = null }) {
+                            Text("Cancel", color = TextTertiary)
+                        }
+                    }
+                },
+                containerColor = Surface
+            )
+        }
+    }
+}
+
+@Composable
+fun AppIcon(packageName: String, appName: String, sizeDp: Int = 36, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val iconBitmap = remember(packageName) {
+        runCatching {
+            val drawable = context.packageManager.getApplicationIcon(packageName)
+            if (drawable is android.graphics.drawable.BitmapDrawable) {
+                drawable.bitmap.asImageBitmap()
+            } else {
+                val w = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96
+                val h = drawable.intrinsicHeight.takeIf { it > 0 } ?: 96
+                val bmp = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+                val canvas = android.graphics.Canvas(bmp)
+                drawable.setBounds(0, 0, w, h)
+                drawable.draw(canvas)
+                bmp.asImageBitmap()
+            }
+        }.getOrNull()
+    }
+
+    Box(
+        modifier = modifier
+            .size(sizeDp.dp)
+            .clip(RoundedCornerShape((sizeDp * 0.28f).dp))
+            .background(Surface),
+        contentAlignment = Alignment.Center
+    ) {
+        if (iconBitmap != null) {
+            Image(
+                bitmap = iconBitmap,
+                contentDescription = appName,
+                modifier = Modifier.size((sizeDp * 0.85f).dp),
+                contentScale = ContentScale.Fit
+            )
+        } else {
+            Text(
+                text = appName.take(1).uppercase(),
+                color = Accent,
+                fontSize = (sizeDp * 0.45f).sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -432,14 +612,18 @@ private fun AppCard(
     app: AppInfo,
     isFavorite: Boolean,
     isEnabled: Boolean,
+    hasCustomConfig: Boolean,
     onToggleFavorite: () -> Unit,
-    onToggleEnabled: (Boolean) -> Unit
+    onToggleEnabled: (Boolean) -> Unit,
+    onCardClick: () -> Unit
 ) {
-    GlassCard {
+    GlassCard(
+        modifier = Modifier.clickable(onClick = onCardClick)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onToggleFavorite, modifier = Modifier.size(32.dp)) {
@@ -450,9 +634,35 @@ private fun AppCard(
                     modifier = Modifier.size(18.dp)
                 )
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
+            AppIcon(packageName = app.packageName, appName = app.appName, sizeDp = 36)
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(app.appName, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.W500)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        app.appName,
+                        color = TextPrimary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        maxLines = 1
+                    )
+                    if (hasCustomConfig) {
+                        Spacer(Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Accent.copy(alpha = 0.18f))
+                                .padding(horizontal = 5.dp, vertical = 1.dp)
+                        ) {
+                            Text(
+                                "Custom",
+                                color = Accent,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
                 Row {
                     Text(app.packageName, color = TextTertiary, fontSize = 10.sp, maxLines = 1)
                     if (app.versionName.isNotBlank()) {
@@ -471,28 +681,14 @@ private fun AppCard(
 
 @Composable
 private fun CurrentAppBanner(app: AppInfo) {
-    GlassCard(
-    ) {
+    GlassCard {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Accent.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    app.appName.first().uppercase(),
-                    color = Accent,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W700
-                )
-            }
+            AppIcon(packageName = app.packageName, appName = app.appName, sizeDp = 36)
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Now Active", color = TextTertiary, fontSize = 11.sp, fontWeight = FontWeight.W500)
